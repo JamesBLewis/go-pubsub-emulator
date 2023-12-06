@@ -14,6 +14,6 @@ jobs:
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag jamesblewis/go-pubsub-emulator
     - name: Log into registry
-      run: echo "${{ secrets.DOCKERHUB_API_KEY }}" | docker login -u ${ secrets.DOCKERHUB_USERNAME } --password-stdin
+      run: echo "${{ secrets.DOCKERHUB_API_KEY }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
     - name: Push the Docker image
       run: docker push jamesblewis/go-pubsub-emulator
