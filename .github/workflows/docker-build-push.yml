@@ -2,7 +2,8 @@ name: push image to docker.com
 
 on:
   push:
-    branches: [ "master" ]
+    branches:
+      - master
     # Publish semver tags as releases.
     tags:
       - 'v*.*.*'
@@ -16,8 +17,8 @@ jobs:
         id: tag_info
         run: echo "::set-output name=tag::$(echo ${GITHUB_REF#refs/tags/})"
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag jamesblewis/go-pubsub-emulator:${{ steps.tag_info.outputs.tag }}
+        run: docker build . --file Dockerfile --tag "jamesblewis/go-pubsub-emulator:${{ steps.tag_info.outputs.tag }}"
       - name: Log into registry
         run: echo "${{ secrets.DOCKERHUB_API_KEY }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
       - name: Push the Docker image
-        run: docker push jamesblewis/go-pubsub-emulator:${{ steps.tag_info.outputs.tag }}
+        run: docker push "jamesblewis/go-pubsub-emulator:${{ steps.tag_info.outputs.tag }}"
