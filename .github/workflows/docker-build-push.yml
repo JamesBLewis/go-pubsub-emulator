@@ -1,0 +1,19 @@
+name: push image to docker.com
+
+on:
+  push:
+    branches: [ "master" ]
+    # Publish semver tags as releases.
+    tags: [ 'v*.*.*' ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag jamesblewis/go-pubsub-emulator
+    - name: Log into registry
+      run: echo "${{ secrets.DOCKERHUB_API_KEY }}" | docker login -u ${ secrets.DOCKERHUB_USERNAME } --password-stdin
+    - name: Push the Docker image
+      run: docker push jamesblewis/go-pubsub-emulator
