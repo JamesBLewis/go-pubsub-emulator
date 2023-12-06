@@ -22,7 +22,7 @@ ENV PUBSUB_EMULATOR_HOST ${PUBSUB_PORT}
 
 USER nonroot
 
-COPY --from=builder /src/dist/configure-pubsub /bin
+COPY --from=builder dist/ /bin
 
 # Create a volume for Pub/Sub data to reside
 RUN mkdir -p /var/pubsub
