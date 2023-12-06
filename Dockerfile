@@ -10,15 +10,10 @@ WORKDIR /app
 COPY src ./
 RUN go mod download
 
-# Build
-RUN GOOS=linux go build -o ./dist/configure-pubsub ./cmd
+# Build for arm
+RUN go build -o ./dist/configure-pubsub ./cmd
 
-# step 2 install the pubsub emulator
-FROM  --platform=linux/arm64  google/cloud-sdk:alpine AS cloud-sdk
-RUN gcloud components install pubsub-emulator
-
-# step 3 only copy what we need onto the runtime image
-FROM --platform=linux/arm64 openjdk:jre-alpine
+FROM google/cloud-sdk:emulators
 
 ENV PUBSUB_PROJECT testproject
 ENV PUBSUB_TOPIC testtopic
@@ -26,19 +21,13 @@ ENV PUBSUB_SUBSCRIPTION testsubscription
 ENV PUBSUB_PORT 8085
 ENV PUBSUB_EMULATOR_HOST ${PUBSUB_PORT}
 
-# Create a volume for Pub/Sub data to reside
-#RUN mkdir -p /var/pubsub
-#VOLUME /var/pubsub
-
 COPY --from=gobuild /app/dist /
-COPY --from=cloud-sdk /google-cloud-sdk/platform/pubsub-emulator /pubsub-emulator
-
 COPY start.sh /
 COPY wait-for-it.sh /
 
-RUN apk --update --no-cache add tini bash
-
-ENTRYPOINT ["/sbin/tini", "--"]
+# Create a volume for Pub/Sub data to reside
+RUN mkdir -p /var/pubsub
+VOLUME /var/pubsub
 
 EXPOSE ${PUBSUB_PORT}
 
