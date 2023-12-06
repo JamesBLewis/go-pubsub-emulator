@@ -13,12 +13,7 @@ RUN go mod download
 # Build
 RUN GOOS=linux go build -o ./dist/configure-pubsub ./cmd
 
-# step 2 install the pubsub emulator
-FROM google/cloud-sdk:alpine AS cloud-sdk
-RUN gcloud components install pubsub-emulator
-
-# step 3 only copy what we need onto the runtime image
-FROM --platform=linux/amd64 openjdk:jre-alpine
+FROM google/cloud-sdk:293.0.0-slim
 
 ENV PUBSUB_PROJECT testproject
 ENV PUBSUB_TOPIC testtopic
@@ -26,19 +21,24 @@ ENV PUBSUB_SUBSCRIPTION testsubscription
 ENV PUBSUB_PORT 8085
 ENV PUBSUB_EMULATOR_HOST ${PUBSUB_PORT}
 
+COPY --from=gobuild /app/dist /
+
 # Create a volume for Pub/Sub data to reside
 RUN mkdir -p /var/pubsub
 VOLUME /var/pubsub
 
-COPY --from=gobuild /app/dist /
-COPY --from=cloud-sdk /google-cloud-sdk/platform/pubsub-emulator /pubsub-emulator
+# add an extra source here for Java as this does not come by default in Buster
+RUN echo "deb http://evebox.org/files/debian sid main" | sudo tee /etc/apt/sources.list
+RUN apt-get update
+
+# Remove this package as Java tries to install an older version which this gets in the way of
+RUN apt-get -yq remove libgcc-8-dev
+
+# Install Java for the Pub/Sub emulator, and the emulator
+RUN apt-get -yq install openjdk-8-jdk google-cloud-sdk-pubsub-emulator
 
 COPY start.sh /
 COPY wait-for-it.sh /
-
-RUN apk --update --no-cache add tini bash
-
-ENTRYPOINT ["/sbin/tini", "--"]
 
 EXPOSE ${PUBSUB_PORT}
 
