@@ -4,16 +4,20 @@ on:
   push:
     branches: [ "master" ]
     # Publish semver tags as releases.
-    tags: [ 'v*.*.*' ]
+    tags:
+      - 'v*.*.*'
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag jamesblewis/go-pubsub-emulator
-    - name: Log into registry
-      run: echo "${{ secrets.DOCKERHUB_API_KEY }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-    - name: Push the Docker image
-      run: docker push jamesblewis/go-pubsub-emulator
+      - uses: actions/checkout@v3
+      - name: Extract tag information
+        id: tag_info
+        run: echo "::set-output name=tag::$(echo ${GITHUB_REF#refs/tags/})"
+      - name: Build the Docker image
+        run: docker build . --file Dockerfile --tag jamesblewis/go-pubsub-emulator:${{ steps.tag_info.outputs.tag }}
+      - name: Log into registry
+        run: echo "${{ secrets.DOCKERHUB_API_KEY }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+      - name: Push the Docker image
+        run: docker push jamesblewis/go-pubsub-emulator:${{ steps.tag_info.outputs.tag }}

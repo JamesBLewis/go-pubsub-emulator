@@ -11,7 +11,7 @@ COPY src ./
 RUN go mod download
 
 # Build for arm
-RUN go build -o ./dist/configure-pubsub ./cmd
+RUN CGO_ENABLED=0 GOOS=linux go build -o ./dist/configure-pubsub ./cmd
 
 FROM google/cloud-sdk:emulators
 
