@@ -27,8 +27,8 @@ ENV PUBSUB_PORT 8085
 ENV PUBSUB_EMULATOR_HOST ${PUBSUB_PORT}
 
 # Create a volume for Pub/Sub data to reside
-RUN mkdir -p /var/pubsub
-VOLUME /var/pubsub
+#RUN mkdir -p /var/pubsub
+#VOLUME /var/pubsub
 
 COPY --from=gobuild /app/dist /
 COPY --from=cloud-sdk /google-cloud-sdk/platform/pubsub-emulator /pubsub-emulator
