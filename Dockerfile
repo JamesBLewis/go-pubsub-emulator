@@ -12,7 +12,7 @@ RUN go mod download
 # Build
 RUN GOOS=linux go build -o ./dist/configure-pubsub ./cmd
 
-FROM google/cloud-sdk:293.0.0-slim
+FROM google/cloud-sdk:456.0.0-slim
 
 ENV PUBSUB_PROJECT testproject
 ENV PUBSUB_TOPIC testtopic
@@ -25,13 +25,6 @@ COPY --from=builder /app/dist /bin
 # Create a volume for Pub/Sub data to reside
 RUN mkdir -p /var/pubsub
 VOLUME /var/pubsub
-
-# add an extra source here for Java as this does not come by default in Buster
-RUN echo "deb http://ftp.us.debian.org/debian sid main" | tee -a /etc/apt/sources.list
-RUN apt-get update
-
-# Remove this package as Java tries to install an older version which this gets in the way of
-RUN apt-get -yq remove libgcc-8-dev
 
 # Install Java for the Pub/Sub emulator, and the emulator
 RUN apt-get -yq install openjdk-8-jdk google-cloud-sdk-pubsub-emulator
