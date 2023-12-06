@@ -11,7 +11,7 @@ COPY src ./
 RUN go mod download
 
 # Build for arm
-RUN CGO_ENABLED=0 go build -ldflags '-extldflags "-static"' -o ./dist/configure-pubsub ./cmd
+RUN go build -o ./dist/configure-pubsub ./cmd
 
 FROM google/cloud-sdk:emulators
 
@@ -24,6 +24,12 @@ ENV PUBSUB_EMULATOR_HOST ${PUBSUB_PORT}
 COPY --from=gobuild /app/dist /
 COPY start.sh /
 COPY wait-for-it.sh /
+
+# Install glibc
+RUN apt-get update && apt-get install -y libc6
+
+# Set the library path
+ENV LD_LIBRARY_PATH=/lib/x86_64-linux-gnu
 
 # Create a volume for Pub/Sub data to reside
 RUN mkdir -p /var/pubsub
