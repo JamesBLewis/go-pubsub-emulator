@@ -1,3 +1,17 @@
+# syntax=docker/dockerfile:1
+
+FROM golang:1.21 AS builder
+
+# Set destination for COPY
+WORKDIR /app
+
+# Download Go modules
+COPY src ./
+RUN go mod download
+
+# Build
+RUN GOOS=linux go build -o ./dist/configure-pubsub ./cmd
+
 FROM google/cloud-sdk:293.0.0-slim
 
 ENV PUBSUB_PROJECT testproject
@@ -5,6 +19,10 @@ ENV PUBSUB_TOPIC testtopic
 ENV PUBSUB_SUBSCRIPTION testsubscription
 ENV PUBSUB_PORT 8085
 ENV PUBSUB_EMULATOR_HOST ${PUBSUB_PORT}
+
+USER nonroot
+
+COPY --from=builder /src/dist/configure-pubsub /bin
 
 # Create a volume for Pub/Sub data to reside
 RUN mkdir -p /var/pubsub
@@ -20,14 +38,8 @@ RUN apt-get -yq remove libgcc-8-dev
 # Install Java for the Pub/Sub emulator, and the emulator
 RUN apt-get -yq install openjdk-8-jdk google-cloud-sdk-pubsub-emulator
 
-COPY create_topic_and_subscription.py /
 COPY start.sh /
 COPY wait-for-it.sh /
-
-# Install gcloud Pub/Sub Python module
-COPY requirements.txt /
-RUN python3 -m pip install --user --upgrade pip
-RUN python3 -m pip install --user -r requirements.txt
 
 EXPOSE ${PUBSUB_PORT}
 
