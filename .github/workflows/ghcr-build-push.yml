@@ -6,7 +6,7 @@ name: push image to ghcr
 
 on:
   push:
-    branches: [ "master" ]
+    # branches: [ "master" ]
     # Publish semver tags as releases.
     tags: [ 'v*.*.*' ]
 
