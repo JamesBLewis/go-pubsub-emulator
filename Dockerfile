@@ -26,8 +26,12 @@ COPY --from=builder /app/dist /bin
 RUN mkdir -p /var/pubsub
 VOLUME /var/pubsub
 
-RUN add-apt-repository ppa:webupd8team/java
+# add an extra source here for Java as this does not come by default in Buster
+RUN echo "deb https://ftp.us.debian.org/debian sid main" | tee -a /etc/apt/sources.list
 RUN apt-get update
+
+# Remove this package as Java tries to install an older version which this gets in the way of
+RUN apt-get -yq remove libgcc-8-dev
 
 # Install Java for the Pub/Sub emulator, and the emulator
 RUN apt-get -yq install openjdk-8-jdk google-cloud-sdk-pubsub-emulator
