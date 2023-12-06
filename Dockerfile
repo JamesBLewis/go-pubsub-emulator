@@ -20,8 +20,6 @@ ENV PUBSUB_SUBSCRIPTION testsubscription
 ENV PUBSUB_PORT 8085
 ENV PUBSUB_EMULATOR_HOST ${PUBSUB_PORT}
 
-USER nonroot
-
 COPY --from=builder /app/dist /bin
 
 # Create a volume for Pub/Sub data to reside
