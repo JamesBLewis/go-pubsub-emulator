@@ -2,7 +2,7 @@ name: push image to docker.com
 
 on:
   push:
-    # branches: [ "master" ]
+    branches: [ "master" ]
     # Publish semver tags as releases.
     tags: [ 'v*.*.*' ]
 
