@@ -26,8 +26,7 @@ COPY --from=builder /app/dist /bin
 RUN mkdir -p /var/pubsub
 VOLUME /var/pubsub
 
-# add an extra source here for Java as this does not come by default in Buster
-RUN echo "deb http://ftp.us.debian.org/debian sid main" | tee -a /etc/apt/sources.list
+RUN add-apt-repository ppa:webupd8team/java
 RUN apt-get update
 
 # Install Java for the Pub/Sub emulator, and the emulator
