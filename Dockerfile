@@ -33,4 +33,4 @@ VOLUME /var/pubsub
 
 EXPOSE ${PUBSUB_PORT}
 
-CMD ["./start.sh"]
+HEALTHCHECK --timeout=40s CMD ["./configure-pubsub", "healthcheck"]
