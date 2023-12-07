@@ -1,7 +1,9 @@
 package config
 
 import (
+	"errors"
 	"os"
+	"path"
 
 	"gopkg.in/yaml.v3"
 )
@@ -11,8 +13,20 @@ type Config struct {
 	Topics    map[string][]string `yaml:"topics"`
 }
 
-func ReadConfigFile(configFile string) (map[string][]string, error) {
-	configData, err := os.ReadFile(configFile)
+var configFolder = "./config"
+
+func ReadConfigFile() (*Config, error) {
+	files, err := os.ReadDir(configFolder)
+	if err != nil {
+		return nil, err
+	}
+	if len(files) == 0 {
+		return nil, nil
+	}
+	if len(files) > 1 {
+		return nil, errors.New("expected only 1 config file but found multiple")
+	}
+	configData, err := os.ReadFile(path.Join(configFolder, files[0].Name()))
 	if err != nil {
 		return nil, err
 	}
@@ -23,5 +37,5 @@ func ReadConfigFile(configFile string) (map[string][]string, error) {
 		return nil, err
 	}
 
-	return config.Topics, nil
+	return &config, nil
 }

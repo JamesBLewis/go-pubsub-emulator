@@ -24,7 +24,7 @@ docker run --rm --env PUBSUB_PROJECT=myproject --env PUBSUB_TOPIC=mytopic --env 
 This image allows you to specify more complex config via yaml for when you need multiple topics and subscriptions.
 
 ```shell script
-docker run --rm --env CONFIG=path/to/config.yaml --publish 10101:10101 jamesblewis/go-pubsub-emulator:latest
+docker run --rm --env --mount source=./path/to/your/config,target=config/ --publish 10101:10101 jamesblewis/go-pubsub-emulator:latest
 ```
 
 The yaml config should look something like this:
@@ -52,6 +52,7 @@ version: '3'
   services:
     pubsub:
       image: jamesblewis/go-pubsub-emulator:latest
+      platform: linux/amd64
       ports:
         - "10101:10101"
       environment:

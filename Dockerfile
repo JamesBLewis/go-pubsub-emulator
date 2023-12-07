@@ -25,12 +25,8 @@ COPY --from=gobuild /app/dist /
 COPY start.sh /
 COPY wait-for-it.sh /
 
-# Install glibc
-RUN apt-get update && apt-get install -y libc6
-
-# Set the library path
-ENV LD_LIBRARY_PATH=/lib/x86_64-linux-gnu
-
+# make folder for config to be stored in
+RUN mkdir -p /config
 # Create a volume for Pub/Sub data to reside
 RUN mkdir -p /var/pubsub
 VOLUME /var/pubsub
