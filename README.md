@@ -36,8 +36,8 @@ topics:
     - subscription1
     - subscription2
   topic2:
-    - subscription1
-    - subscription2
+    - subscription3
+    - subscription4
 
 ```
 

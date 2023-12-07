@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # steup 1 build the go binary
-FROM golang:1.21 AS gobuild
+FROM FROM golang:1.21 AS gobuild
 
 # Set destination for COPY
 WORKDIR /app
@@ -19,9 +19,8 @@ ENV PUBSUB_PROJECT testproject
 ENV PUBSUB_TOPIC testtopic
 ENV PUBSUB_SUBSCRIPTION testsubscription
 ENV PUBSUB_PORT 8085
-ENV PUBSUB_EMULATOR_HOST ${PUBSUB_PORT}
 
-COPY --from=gobuild /app/dist /g
+COPY --from=gobuild /app/dist /
 
 # make folder for config to be stored in
 RUN mkdir -p /config
@@ -31,4 +30,7 @@ VOLUME /var/pubsub
 
 EXPOSE ${PUBSUB_PORT}
 
-HEALTHCHECK --timeout=40s CMD ["./configure-pubsub", "healthcheck"]
+CMD gcloud beta emulators pubsub start --project=${PUBSUB_PROJECT} --data-dir=/var/pubsub --host-port=0.0.0.0:${PUBSUB_PORT} --log-http --verbosity=debug --user-output-enabled
+
+HEALTHCHECK --timeout=40s CMD ./configure-pubsub
+

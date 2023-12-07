@@ -25,13 +25,16 @@ func main() {
 
 	// Attempt to read configuration from the file
 	configFromFile, configErr := config.ReadConfigFile()
-	if configErr == nil {
+	if configErr != nil {
+		log.Printf("error reading config file: %v", configErr)
+	}
+	if configFromFile != nil {
 		// Configuration file found, use it
 		log.Println("successfully read config from file")
 		cfg = configFromFile
 	} else {
 		// Configuration file not found, check environment variables
-		log.Println("unable to read config file, checking environment variables")
+		log.Println("unable to find config file, checking environment variables")
 		project := os.Getenv("PUBSUB_PROJECT")
 		if project == "" {
 			log.Fatal("Please provide PUBSUB_PROJECT environment variable")
@@ -46,6 +49,7 @@ func main() {
 
 		// Add the specified topic and subscription to the map
 		cfg = &config.Config{
+			ProjectID: project,
 			Topics: map[string][]string{
 				topicID: {subID},
 			},
