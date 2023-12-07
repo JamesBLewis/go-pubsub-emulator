@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
@@ -9,8 +10,12 @@ import (
 	"github.com/JamesBLewis/go-pubsub-emulator/pkg/pubsubmanager"
 )
 
+// for local testing
+// var _ = os.Setenv("PUBSUB_EMULATOR_HOST", "localhost:8185")
+
 func main() {
 	var cfg *config.Config
+	ctx := context.Background()
 	// Attempt to read configuration from the file
 	configFromFile, err := config.ReadConfigFile()
 	if err == nil {
@@ -34,7 +39,6 @@ func main() {
 
 		// Add the specified topic and subscription to the map
 		cfg = &config.Config{
-			ProjectID: project,
 			Topics: map[string][]string{
 				topicID: {subID},
 			},
@@ -42,8 +46,11 @@ func main() {
 	}
 
 	// Use the Pub/Sub manager to create cfg and subscriptions
-	manager := pubsubmanager.NewPubSubManager(cfg.ProjectID)
-	err = manager.CreateTopicsAndSubscriptions(cfg.Topics)
+	manager, err := pubsubmanager.NewPubSubManager(ctx, cfg.ProjectID)
+	if err != nil {
+		log.Fatalf("Error creating Pub/Sub manager: %v", err)
+	}
+	err = manager.CreateTopicsAndSubscriptions(ctx, cfg.Topics)
 	if err != nil {
 		log.Fatalf("Error creating cfg and subscriptions: %v", err)
 	}

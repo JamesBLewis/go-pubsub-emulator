@@ -62,5 +62,21 @@ version: '3'
         - PUBSUB_SUBSCRIPTION=mysubscription
 ```
 
+#### example with yaml config
+
+```docker-compose
+version: '3'
+  services:
+    pubsub:
+      image: jamesblewis/go-pubsub-emulator:latest
+      platform: linux/amd64
+      ports:
+        - "10101:10101"
+      environment:
+        - PUBSUB_PORT=10101
+        volumes:
+          - ./pubsub-config.yaml:/config/pubsub.yaml
+```
+
 ## Attribution
 This image is based on [jacksonjesse/pubsub-emulator](https://github.com/jacksonjesse/pubsub-emulator).

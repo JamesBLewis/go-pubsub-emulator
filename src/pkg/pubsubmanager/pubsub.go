@@ -14,10 +14,17 @@ type PubSubManager struct {
 	client    *pubsub.Client
 }
 
-func NewPubSubManager(projectID string) *PubSubManager {
+func NewPubSubManager(ctx context.Context, projectID string) (*PubSubManager, error) {
+	// Create a Pub/Sub client with the specified project ID
+	pubsubClient, err := pubsub.NewClient(ctx, projectID)
+	if err != nil {
+		return nil, fmt.Errorf("error creating Pub/Sub client: %v", err)
+	}
+
 	return &PubSubManager{
 		projectID: projectID,
-	}
+		client:    pubsubClient,
+	}, nil
 }
 
 func (m *PubSubManager) createTopic(ctx context.Context, topicID string) (*pubsub.Topic, error) {
@@ -63,17 +70,7 @@ func (m *PubSubManager) createSubscription(ctx context.Context, topic *pubsub.To
 	return sub, nil
 }
 
-func (m *PubSubManager) CreateTopicsAndSubscriptions(topics map[string][]string) error {
-	ctx := context.Background()
-
-	// Create a Pub/Sub client with the specified project ID
-	client, err := pubsub.NewClient(ctx, m.projectID)
-	if err != nil {
-		return fmt.Errorf("error creating Pub/Sub client: %v", err)
-	}
-
-	m.client = client
-
+func (m *PubSubManager) CreateTopicsAndSubscriptions(ctx context.Context, topics map[string][]string) error {
 	// Create topics and subscriptions
 	for topicID, subs := range topics {
 		topic, err := m.createTopic(ctx, topicID)
