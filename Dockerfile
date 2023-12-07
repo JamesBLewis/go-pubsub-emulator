@@ -21,9 +21,7 @@ ENV PUBSUB_SUBSCRIPTION testsubscription
 ENV PUBSUB_PORT 8085
 ENV PUBSUB_EMULATOR_HOST ${PUBSUB_PORT}
 
-COPY --from=gobuild /app/dist /
-COPY start.sh /
-COPY wait-for-it.sh /
+COPY --from=gobuild /app/dist /g
 
 # make folder for config to be stored in
 RUN mkdir -p /config
