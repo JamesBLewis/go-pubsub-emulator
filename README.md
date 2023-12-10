@@ -41,8 +41,6 @@ topics:
 
 ```
 
-_Note if you choose to specify a CONFIG file it will override any other environment variables you pass in._
-
 ### Docker Compose
 
 This is the equivalent configuration for `docker-compose`, with custom environment variables for the project name, topic name, subscription name and Pub/Sub port.
@@ -53,8 +51,6 @@ version: '3'
     pubsub:
       image: jamesblewis/go-pubsub-emulator:latest
       platform: linux/amd64
-      ports:
-        - "10101:10101"
       environment:
         - PUBSUB_PORT=10101
         - PUBSUB_PROJECT=myproject
@@ -62,7 +58,11 @@ version: '3'
         - PUBSUB_SUBSCRIPTION=mysubscription
 ```
 
-#### example with yaml config
+#### Example with yaml config
+
+To pass your config as yaml simply mount it inside the config folder. 
+
+_Note that you will still need to pass the port as an environment variable but the yaml will override any other environment variable you may set._
 
 ```docker-compose
 version: '3'
@@ -70,8 +70,6 @@ version: '3'
     pubsub:
       image: jamesblewis/go-pubsub-emulator:latest
       platform: linux/amd64
-      ports:
-        - "10101:10101"
       environment:
         - PUBSUB_PORT=10101
         volumes:
