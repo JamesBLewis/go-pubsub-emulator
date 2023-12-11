@@ -30,7 +30,6 @@ docker run --rm --env --mount source=./path/to/your/config,target=config/ --publ
 The yaml config should look something like this:
 
 ```yaml
-projectID: myproject
 topics:
   topic1:
     - subscription1
@@ -38,7 +37,6 @@ topics:
   topic2:
     - subscription3
     - subscription4
-
 ```
 
 ### Docker Compose
@@ -62,7 +60,7 @@ version: '3'
 
 To pass your config as yaml simply mount it inside the config folder. 
 
-_Note that you will still need to pass the port as an environment variable but the yaml will override any other environment variable you may set._
+_Note that you will still need to pass the port and project as an environment variable but the yaml will override any other environment variable you may set._
 
 ```docker-compose
 version: '3'
@@ -72,8 +70,9 @@ version: '3'
       platform: linux/amd64
       environment:
         - PUBSUB_PORT=10101
-        volumes:
-          - ./pubsub-config.yaml:/config/pubsub.yaml
+        - PUBSUB_PROJECT=myproject
+      volumes:
+        - ./pubsub-config.yaml:/config/pubsub.yaml
 ```
 
 ## Attribution

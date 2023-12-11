@@ -20,6 +20,11 @@ func main() {
 		log.Fatalln("Please provide PUBSUB_PORT environment variable")
 	}
 
+	project := os.Getenv("PUBSUB_PROJECT")
+	if project == "" {
+		log.Fatal("Please provide PUBSUB_PROJECT environment variable")
+	}
+
 	// for local testing
 	var _ = os.Setenv("PUBSUB_EMULATOR_HOST", fmt.Sprintf("localhost:%s", port))
 
@@ -35,10 +40,6 @@ func main() {
 	} else {
 		// Configuration file not found, check environment variables
 		log.Println("unable to find config file, checking environment variables")
-		project := os.Getenv("PUBSUB_PROJECT")
-		if project == "" {
-			log.Fatal("Please provide PUBSUB_PROJECT environment variable")
-		}
 
 		topicID := os.Getenv("PUBSUB_TOPIC")
 		subID := os.Getenv("PUBSUB_SUBSCRIPTION")
@@ -49,7 +50,6 @@ func main() {
 
 		// Add the specified topic and subscription to the map
 		cfg = &config.Config{
-			ProjectID: project,
 			Topics: map[string][]string{
 				topicID: {subID},
 			},
@@ -63,7 +63,7 @@ func main() {
 	}
 
 	// Use the Pub/Sub manager to create cfg and subscriptions
-	manager, managerErr := pubsubmanager.NewPubSubManager(ctx, cfg.ProjectID)
+	manager, managerErr := pubsubmanager.NewPubSubManager(ctx, project)
 	if managerErr != nil {
 		log.Fatalf("Error creating Pub/Sub manager: %v", managerErr)
 	}

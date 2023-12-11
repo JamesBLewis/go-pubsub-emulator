@@ -30,5 +30,6 @@ VOLUME /var/pubsub
 
 EXPOSE ${PUBSUB_PORT}
 
-# thanks chat gpt
+# start pubsub emulator as well as the Go program that creates the topics and subsricptions.
+# if the go program exits due to an error, the container will exit as well.
 CMD ["sh", "-c", "set -e; gcloud beta emulators pubsub start --project=${PUBSUB_PROJECT} --data-dir=/var/pubsub --host-port=0.0.0.0:${PUBSUB_PORT} --log-http --verbosity=debug --user-output-enabled & pid=$!; ./configure-pubsub; wait $pid"]

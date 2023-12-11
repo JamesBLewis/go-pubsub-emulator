@@ -9,8 +9,7 @@ import (
 )
 
 type Config struct {
-	ProjectID string              `yaml:"projectID"`
-	Topics    map[string][]string `yaml:"topics"`
+	Topics map[string][]string `yaml:"topics"`
 }
 
 var configFolder = "./config"
